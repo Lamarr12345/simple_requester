@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QWidget,QLineEdit,QTextEdit, QLabel, QVBoxLayout, QHBoxLayout, QSplitter, QTextBrowser ,QTabWidget
+from PySide6.QtWidgets import QWidget,QLineEdit,QTextEdit, QLabel, QVBoxLayout, QHBoxLayout, QSplitter, QTabWidget
 from PySide6.QtCore import Qt
 from requests import Response
+from bs4 import BeautifulSoup
 
 class ResponseWidget(QWidget):
     def __init__(self, response: Response):
@@ -18,11 +19,12 @@ class ResponseWidget(QWidget):
         self.te_headers = QTextEdit(self)
         self.te_headers.setReadOnly(True)
 
-        self.te_html_content = QTextBrowser(self)
+        self.te_html_content = QTextEdit(self)
         self.te_html_content.setReadOnly(True)
 
         self.te_raw_content = QTextEdit(self)
         self.te_raw_content.setReadOnly(True)
+        self.te_raw_content.setAutoFormatting(QTextEdit.AutoNone)
 
         v_status_headers_layout = QVBoxLayout()
         v_status_headers_layout.addWidget(label_status)
@@ -60,6 +62,8 @@ class ResponseWidget(QWidget):
         self.show()
 
     def load_response_data(self):
+        soup = BeautifulSoup(self.response.content, "html.parser")
+        html_text_string = soup.prettify()
         
         status_text = f"{self.response.status_code} : {self.response.reason}"
         self.le_status.setText(status_text)
@@ -69,6 +73,6 @@ class ResponseWidget(QWidget):
             header_text += f"{key} : {value}\n\n"
         self.te_headers.setPlainText(header_text)
 
-        self.te_html_content.setHtml(self.response.text)
-        self.te_raw_content.setPlainText(self.response.text)
+        self.te_html_content.setHtml(html_text_string)
+        self.te_raw_content.setPlainText(html_text_string)
 
