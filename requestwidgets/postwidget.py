@@ -1,9 +1,8 @@
 from PySide6.QtWidgets import QWidget, QLabel, QLineEdit, QListWidget, QPushButton, QHBoxLayout, QVBoxLayout,QMessageBox
 import requests
-import json as json_lib
 
 from responsewidget import ResponseWidget
-from utils.helper import str_to_valid_dict
+from utils.helper import str_to_valid_dict, valid_json_to_py_object
 
 
 class PostWidget(QWidget):
@@ -31,6 +30,9 @@ class PostWidget(QWidget):
 
         b_send_request = QPushButton("Send Request")
         b_send_request.clicked.connect(self.send_request)
+
+        b_clear_data = QPushButton("Clear Data")
+        b_clear_data.clicked.connect(self.clear_data)
 
         label_saved_requests = QLabel("Saved Requests:")
         
@@ -62,6 +64,10 @@ class PostWidget(QWidget):
         v_headers_layout.addWidget(label_headers)
         v_headers_layout.addWidget(self.le_headers)
 
+        h_b_main_layout = QHBoxLayout()
+        h_b_main_layout.addWidget(b_send_request)
+        h_b_main_layout.addWidget(b_clear_data)
+
         v_b_saved_requests_layout = QVBoxLayout()
         v_b_saved_requests_layout.addWidget(b_save_request)
         v_b_saved_requests_layout.addWidget(b_load_request)
@@ -81,7 +87,7 @@ class PostWidget(QWidget):
         v_base_layout.addLayout(v_json_layout)
         v_base_layout.addLayout(v_params_layout)
         v_base_layout.addLayout(v_headers_layout)
-        v_base_layout.addWidget(b_send_request)
+        v_base_layout.addLayout(h_b_main_layout)
         v_base_layout.addLayout(v_saved_requests_layout)
         
         self.setLayout(v_base_layout)
@@ -95,7 +101,7 @@ class PostWidget(QWidget):
             QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
             return
         try:
-            json = json_lib.loads(self.le_json.text())
+            json = valid_json_to_py_object(self.le_json.text())
         except Exception as e:
             QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
             return
@@ -127,6 +133,13 @@ class PostWidget(QWidget):
             "params": self.le_params.text(),
             "headers": self.le_headers.text(),
         }
+
+    def clear_data(self):
+        self.le_url.clear(),
+        self.le_data.clear(),
+        self.le_json.clear(),
+        self.le_params.clear(),
+        self.le_headers.clear(),
 
     def save_request(self):
         if not self.recent_valid_request_data:

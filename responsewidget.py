@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget,QLineEdit,QTextEdit, QLabel, QVBoxLayout, QHBoxLayout, QSplitter, QGroupBox, QRadioButton,QTabWidget
+from PySide6.QtWidgets import QWidget,QLineEdit,QTextEdit, QLabel, QVBoxLayout, QHBoxLayout, QSplitter, QTextBrowser ,QTabWidget
 from PySide6.QtCore import Qt
 from requests import Response
 
@@ -18,7 +18,7 @@ class ResponseWidget(QWidget):
         self.te_headers = QTextEdit(self)
         self.te_headers.setReadOnly(True)
 
-        self.te_html_content = QTextEdit(self)
+        self.te_html_content = QTextBrowser(self)
         self.te_html_content.setReadOnly(True)
 
         self.te_raw_content = QTextEdit(self)
@@ -60,7 +60,7 @@ class ResponseWidget(QWidget):
         self.show()
 
     def load_response_data(self):
-
+        
         status_text = f"{self.response.status_code} : {self.response.reason}"
         self.le_status.setText(status_text)
 

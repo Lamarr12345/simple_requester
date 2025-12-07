@@ -1,4 +1,5 @@
 from ast import literal_eval
+import json
 
 def str_to_valid_dict(input: str, place:str = "") -> dict | None:
     if not input:
@@ -21,3 +22,15 @@ def str_to_valid_dict(input: str, place:str = "") -> dict | None:
     #         raise Exception(error_msg)
 
     return output_dict
+
+def valid_json_to_py_object(input: str):
+    if not input:
+        return None
+    
+    try:
+        output = json.loads(input)
+    except Exception as e:
+        raise e
+    
+    return output
+    

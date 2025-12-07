@@ -24,6 +24,9 @@ class GetWidget(QWidget):
         b_send_request = QPushButton("Send Request")
         b_send_request.clicked.connect(self.send_request)
 
+        b_clear_data = QPushButton("Clear Data")
+        b_clear_data.clicked.connect(self.clear_data)
+
         label_saved_requests = QLabel("Saved Requests:")
         
         self.lw_saved_requests = QListWidget(self)
@@ -46,6 +49,10 @@ class GetWidget(QWidget):
         v_headers_layout.addWidget(label_headers)
         v_headers_layout.addWidget(self.le_headers)
 
+        h_b_main_layout = QHBoxLayout()
+        h_b_main_layout.addWidget(b_send_request)
+        h_b_main_layout.addWidget(b_clear_data)
+
         v_b_saved_requests_layout = QVBoxLayout()
         v_b_saved_requests_layout.addWidget(b_save_request)
         v_b_saved_requests_layout.addWidget(b_load_request)
@@ -63,7 +70,7 @@ class GetWidget(QWidget):
         v_base_layout.addLayout(v_url_layout)
         v_base_layout.addLayout(v_params_layout)
         v_base_layout.addLayout(v_headers_layout)
-        v_base_layout.addWidget(b_send_request)
+        v_base_layout.addLayout(h_b_main_layout)
         v_base_layout.addLayout(v_saved_requests_layout)
         
         self.setLayout(v_base_layout)
@@ -95,6 +102,11 @@ class GetWidget(QWidget):
             "params": self.le_params.text(),
             "headers": self.le_headers.text(),
         }
+
+    def clear_data(self):
+        self.le_url.clear(),
+        self.le_params.clear(),
+        self.le_headers.clear(),
 
     def save_request(self):
         if not self.recent_valid_request_data:
