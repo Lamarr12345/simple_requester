@@ -98,28 +98,33 @@ class PostWidget(QWidget):
             #very much subject to change because data accepts a lot more
             data = str_to_valid_dict(self.le_params.text(), "data")
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         try:
             json = valid_json_to_py_object(self.le_json.text())
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         try:
             params = str_to_valid_dict(self.le_params.text(), "params")
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         try:
             headers = str_to_valid_dict(self.le_headers.text(), "headers")
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         
         try:
-            response = requests.post(url=url, data=data, json=json, params=params, headers=headers)
+            response = requests.post(url=url,
+                                     data=data,
+                                     json=json,
+                                     params=params,
+                                     headers=headers,
+                                     timeout=self.main_widget.response_timeout)
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
 
         self.main_widget.response_widget = ResponseWidget(response)

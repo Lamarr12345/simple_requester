@@ -80,17 +80,20 @@ class GetWidget(QWidget):
         try:
             params = str_to_valid_dict(self.le_params.text(), "params")
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         try:
             headers = str_to_valid_dict(self.le_headers.text(), "headers")
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         try:
-            response = requests.get(url=url, params=params, headers=headers)
+            response = requests.get(url=url,
+                                    params=params,
+                                    headers=headers,
+                                    timeout=self.main_widget.response_timeout)
         except Exception as e:
-            QMessageBox.critical(self,type(e).__name__, "\n".join(e.args), QMessageBox.Ok)
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
 
         self.main_widget.response_widget = ResponseWidget(response)

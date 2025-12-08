@@ -31,5 +31,6 @@ class MainWidget(QMainWindow):
         self.tab_widget.addTab(self.post_widget,"POST request")
 
         self.response_widget = None
+        self.response_timeout = 5
 
         self.setCentralWidget(self.tab_widget)
