@@ -170,7 +170,12 @@ class PostWidget(QWidget):
         self.recent_valid_request_data = None
 
     def load_request(self):
-        selected_item = self.lw_saved_requests.selectedItems()[0].text()
+        selected_items = self.lw_saved_requests.selectedItems()
+        
+        if not selected_items:
+            return
+        
+        selected_item = selected_items[0].text()
 
         saved_entry =  self.saved_request_data.get(selected_item)
 
