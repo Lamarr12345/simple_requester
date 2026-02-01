@@ -4,14 +4,17 @@ import requests
 
 from responsewidget import ResponseWidget
 from innerwidgets.keyvaluewidget import KeyValueWidget
+from datawidgets.jsonwidget import JSONWidget
+from utils.helper import valid_json_to_py_object
 
-class GetWidget(QWidget):
+class PutWidget(QWidget):
     def __init__(self, parent):
         super().__init__()
 
         self.main_widget = parent
         self.recent_valid_request_data = None
         self.saved_request_data = {}
+        self.json_data_widget = JSONWidget(self.main_widget)
 
         label_url = QLabel("URL:")
         self.le_url = QLineEdit(self)
@@ -47,6 +50,13 @@ class GetWidget(QWidget):
         h_main_buttons_layout.addWidget(b_send_request)
         h_main_buttons_layout.addWidget(b_clear_data)
 
+        label_data = QLabel("Data:")
+        b_edit_json_data = QPushButton("Edit JSON")
+        b_edit_json_data.clicked.connect(self.edit_json_data)
+        v_data_layout = QVBoxLayout()
+        v_data_layout.addWidget(label_data)
+        v_data_layout.addWidget(b_edit_json_data)
+
         label_saved_requests = QLabel("Saved Requests:")
         self.le_savename = QLineEdit(self)
         self.le_savename.setPlaceholderText("Savename here")
@@ -74,6 +84,7 @@ class GetWidget(QWidget):
         v_main_layout_1 = QVBoxLayout()
         v_main_layout_1.addLayout(v_url_layout)
         v_main_layout_1.addLayout(h_main_buttons_layout)
+        v_main_layout_1.addLayout(v_data_layout)
         v_main_layout_1.addWidget(label_saved_requests)
         v_main_layout_1.addLayout(h_save_requests_layout)
 
@@ -91,11 +102,18 @@ class GetWidget(QWidget):
     def send_request(self):
         self.le_url.setText(self.le_url.text().strip())
         url = self.le_url.text()
+
+        try:
+            json = valid_json_to_py_object(self.json_data_widget.get_json_data())
+        except Exception as e:
+            QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
+            return
         
         try:
-            response = requests.get(url=url,
+            response = requests.put(url=url,
                                     params=self.kv_params.get_valid_kv_dict(),
                                     headers=self.kv_headers.get_valid_kv_dict(),
+                                    json=json,
                                     timeout=self.main_widget.response_timeout)
         except Exception as e:
             QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
@@ -107,12 +125,14 @@ class GetWidget(QWidget):
     def cache_recent_valid_request_data(self):
         self.recent_valid_request_data = {
             "url": self.le_url.text(),
+            "json": self.json_data_widget.get_json_data(),
             "params_state": self.kv_params.get_complete_widget_state(),
             "headers_state": self.kv_headers.get_complete_widget_state(),
         }
 
     def clear_data(self):
         self.le_url.clear()
+        self.json_data_widget.delete_json_data()
         self.kv_params.delete_all_kv_pair()
         self.kv_headers.delete_all_kv_pair()
 
@@ -150,6 +170,7 @@ class GetWidget(QWidget):
         saved_entry =  self.saved_request_data.get(selected_item_text)
 
         self.le_url.setText(saved_entry.get("url"))
+        self.json_data_widget.set_json_data(saved_entry.get("json"))
         self.kv_params.set_complete_widget_state(saved_entry.get("params_state"))
         self.kv_headers.set_complete_widget_state(saved_entry.get("headers_state"))
 
@@ -164,4 +185,5 @@ class GetWidget(QWidget):
         del self.saved_request_data[selected_item.text()]
         self.lw_saved_requests.takeItem(self.lw_saved_requests.row(selected_item))
 
-
+    def edit_json_data(self):
+        self.json_data_widget.show()
