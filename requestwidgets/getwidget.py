@@ -3,6 +3,7 @@ import requests
 
 from responsewidget import ResponseWidget
 from utils.helper import str_to_valid_dict
+from innerwidgets.key_value_widget import KeyValueWidget
 
 class GetWidget(QWidget):
     def __init__(self, parent):
@@ -72,6 +73,11 @@ class GetWidget(QWidget):
         v_base_layout.addLayout(v_headers_layout)
         v_base_layout.addLayout(h_b_main_layout)
         v_base_layout.addLayout(v_saved_requests_layout)
+        test_widget = KeyValueWidget()
+        v_base_layout.addWidget(test_widget)
+        test_button = QPushButton("add")
+        test_button.clicked.connect(test_widget.add_kv_pair)
+        v_base_layout.addWidget(test_button)
         
         self.setLayout(v_base_layout)
 
