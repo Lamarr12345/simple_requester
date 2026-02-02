@@ -34,19 +34,18 @@ class ResponseWidget(QWidget):
         status_header_widget = QWidget()
         status_header_widget.setLayout(v_status_headers_layout)
 
-        
-        v_html_content_layout = QVBoxLayout()
-        v_html_content_layout.addWidget(self.te_html_content)
-        html_content_widget = QWidget()
-        html_content_widget.setLayout(v_html_content_layout)
         v_raw_content_layout = QVBoxLayout()
         v_raw_content_layout.addWidget(self.te_raw_content)
         raw_content_widget = QWidget()
         raw_content_widget.setLayout(v_raw_content_layout)
+        v_html_content_layout = QVBoxLayout()
+        v_html_content_layout.addWidget(self.te_html_content)
+        html_content_widget = QWidget()
+        html_content_widget.setLayout(v_html_content_layout)
 
         tab_content = QTabWidget(self)
-        tab_content.addTab(html_content_widget, "HTML")
         tab_content.addTab(raw_content_widget, "raw")
+        tab_content.addTab(html_content_widget, "HTML")
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.addWidget(status_header_widget)
