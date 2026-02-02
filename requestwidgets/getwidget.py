@@ -94,8 +94,8 @@ class GetWidget(QWidget):
         
         try:
             response = requests.get(url=url,
-                                    params=self.kv_params.get_valid_kv_dict(),
-                                    headers=self.kv_headers.get_valid_kv_dict(),
+                                    params=self.kv_params.get_valid_kv_list(),
+                                    headers=self.kv_headers.get_valid_kv_list(),
                                     timeout=self.main_widget.response_timeout)
         except Exception as e:
             QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)

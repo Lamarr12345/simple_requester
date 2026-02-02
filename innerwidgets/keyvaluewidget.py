@@ -66,17 +66,7 @@ class KeyValueWidget(QScrollArea):
     def delete_kv_pair(self):
         del_index = self.delete_button_list.index(self.sender())
 
-        self.checkbox_list[del_index].deleteLater()
-        self.key_list[del_index].deleteLater()
-        self.value_list[del_index].deleteLater()
-        self.delete_button_list[del_index].deleteLater()
-
-        del self.checkbox_list[del_index]
-        del self.key_list[del_index]
-        del self.value_list[del_index]
-        del self.delete_button_list[del_index]
-
-        self.v_list_layout.takeAt(del_index)
+        self._remove_kv_pair_at_index(del_index)
 
     def delete_all_kv_pair(self):
         kv_pair_count = self.v_list_layout.count()
@@ -85,35 +75,23 @@ class KeyValueWidget(QScrollArea):
 
         for i in range(kv_pair_count-1, -1, -1):
 
-            self.checkbox_list[i].deleteLater()
-            self.key_list[i].deleteLater()
-            self.value_list[i].deleteLater()
-            self.delete_button_list[i].deleteLater()
-
-            del self.checkbox_list[i]
-            del self.key_list[i]
-            del self.value_list[i]
-            del self.delete_button_list[i]
-
-            self.v_list_layout.takeAt(i)
+            self._remove_kv_pair_at_index(i)
 
         #return state_before_deletion
 
-    def get_valid_kv_dict(self):
+    def get_valid_kv_list(self):
         kv_pair_count = self.v_list_layout.count()
 
-        output_dict = {}
+        output_list = []
 
         for i in range(kv_pair_count):
-            if self.key_list[i].text():
-                self.key_list[i].setText(self.key_list[i].text().strip())
-            if self.value_list[i].text():
-                self.value_list[i].setText(self.value_list[i].text().strip())
+
+            self._strip_kv_pair_at_index(i)
 
             if self.checkbox_list[i].isChecked() and self.key_list[i].text():
-                output_dict[self.key_list[i].text()] = self.value_list[i].text()
+                output_list.append((self.key_list[i].text(), self.value_list[i].text()))
 
-        return output_dict
+        return output_list
     
     def get_complete_widget_state(self):
         kv_pair_count = self.v_list_layout.count()
@@ -121,10 +99,8 @@ class KeyValueWidget(QScrollArea):
         output_list = []
 
         for i in range(kv_pair_count):
-            if self.key_list[i].text():
-                self.key_list[i].setText(self.key_list[i].text().strip())
-            if self.value_list[i].text():
-                self.value_list[i].setText(self.value_list[i].text().strip())
+            
+            self._strip_kv_pair_at_index(i)
             
             output_list.append(
                 {
@@ -147,3 +123,23 @@ class KeyValueWidget(QScrollArea):
             self.value_list[i].setText(state_list[i].get("value"))
 
 
+    def _remove_kv_pair_at_index(self, index):
+
+        self.checkbox_list[index].deleteLater()
+        self.key_list[index].deleteLater()
+        self.value_list[index].deleteLater()
+        self.delete_button_list[index].deleteLater()
+
+        del self.checkbox_list[index]
+        del self.key_list[index]
+        del self.value_list[index]
+        del self.delete_button_list[index]
+
+        self.v_list_layout.takeAt(index)
+
+    def _strip_kv_pair_at_index(self, index):
+
+        if self.key_list[index].text():
+            self.key_list[index].setText(self.key_list[index].text().strip())
+        if self.value_list[index].text():
+            self.value_list[index].setText(self.value_list[index].text().strip())

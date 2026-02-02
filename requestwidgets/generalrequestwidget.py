@@ -1,17 +1,18 @@
 from PySide6.QtWidgets import QWidget, QLabel, QLineEdit, QListWidget, QPushButton, QHBoxLayout, QVBoxLayout,QMessageBox
 from PySide6.QtCore import Qt
-import requests
+from requests import request
 
 from responsewidget import ResponseWidget
 from innerwidgets.keyvaluewidget import KeyValueWidget
 from datawidgets.jsonwidget import JSONWidget
 from utils.helper import valid_json_to_py_object
 
-class PostWidget(QWidget):
-    def __init__(self, parent):
+class GeneralRequestWidget(QWidget):
+    def __init__(self, parent, method):
         super().__init__()
 
         self.main_widget = parent
+        self.method = method
         self.recent_valid_request_data = None
         self.saved_request_data = {}
         self.json_data_widget = JSONWidget(self.main_widget)
@@ -110,19 +111,20 @@ class PostWidget(QWidget):
             return
         
         try:
-            response = requests.post(url=url,
-                                    params=self.kv_params.get_valid_kv_dict(),
-                                    headers=self.kv_headers.get_valid_kv_dict(),
-                                    json=json,
-                                    timeout=self.main_widget.response_timeout)
+            response = request(method=self.method,
+                               url=url,
+                               params=self.kv_params.get_valid_kv_list(),
+                               headers=self.kv_headers.get_valid_kv_list(),
+                               json=json,
+                               timeout=self.main_widget.response_timeout)
         except Exception as e:
             QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
 
         self.main_widget.response_widget = ResponseWidget(response)
-        self.cache_recent_valid_request_data()
+        self._cache_recent_valid_request_data()
 
-    def cache_recent_valid_request_data(self):
+    def _cache_recent_valid_request_data(self):
         self.recent_valid_request_data = {
             "url": self.le_url.text(),
             "json": self.json_data_widget.get_json_data(),
