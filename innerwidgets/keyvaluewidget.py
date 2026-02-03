@@ -93,6 +93,20 @@ class KeyValueWidget(QScrollArea):
 
         return output_list
     
+    def get_valid_kv_dict(self):
+        kv_pair_count = self.v_list_layout.count()
+
+        output_dict = {}
+
+        for i in range(kv_pair_count):
+
+            self._strip_kv_pair_at_index(i)
+
+            if self.checkbox_list[i].isChecked() and self.key_list[i].text():
+                output_dict[self.key_list[i].text()] = self.value_list[i].text()
+
+        return output_dict
+    
     def get_complete_widget_state(self):
         kv_pair_count = self.v_list_layout.count()
 
