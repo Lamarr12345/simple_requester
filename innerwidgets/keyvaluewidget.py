@@ -21,17 +21,10 @@ class KeyValueWidget(QScrollArea):
         self.value_list: list[QLineEdit] = []
         self.delete_button_list: list[QPushButton] = []
 
-        button_add_vk_pair = QPushButton("Add New")
-        button_add_vk_pair.clicked.connect(self.add_kv_pair)
-
         self.container_widget = QWidget()
         self.v_list_layout = QVBoxLayout()
         self.v_list_layout.setAlignment(Qt.AlignTop)
         self.container_widget.setLayout(self.v_list_layout)
-
-        v_main_layout = QVBoxLayout()
-        v_main_layout.addWidget(self.container_widget)
-        v_main_layout.addWidget(button_add_vk_pair)
 
         self.setWidget(self.container_widget)
 
@@ -46,7 +39,6 @@ class KeyValueWidget(QScrollArea):
         self.key_list.append(new_keybox)
 
         new_valuebox = QLineEdit()
-        new_valuebox.text()
         new_valuebox.setPlaceholderText("Value")
         self.value_list.append(new_valuebox)
 
