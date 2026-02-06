@@ -11,7 +11,7 @@ class URLValueWidget(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.setWidgetResizable(True)
-        self.setMinimumHeight(1)
+        self.setMinimumHeight(150)
         self.setMaximumHeight(max_height)
         self.setFixedWidth(350)
         self.sizeHint()

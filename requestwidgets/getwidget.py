@@ -51,7 +51,7 @@ class GetWidget(QWidget):
         label_url = QLabel("URL:")
         self.le_url = QLineEdit(self)
         self.le_url.setPlaceholderText("URL here")
-        self.le_url.setFixedWidth(350)
+        self.le_url.setFixedWidth(400)
         v_url_layout = QVBoxLayout()
         v_url_layout.addWidget(label_url)
         v_url_layout.addWidget(self.le_url)

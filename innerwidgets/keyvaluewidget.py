@@ -13,7 +13,7 @@ class KeyValueWidget(QScrollArea):
         self.setWidgetResizable(True)
         self.setMinimumHeight(1)
         self.setFixedHeight(height)
-        self.setFixedWidth(350)
+        self.setFixedWidth(400)
         self.sizeHint()
 
         self.checkbox_list: list[QCheckBox] = []

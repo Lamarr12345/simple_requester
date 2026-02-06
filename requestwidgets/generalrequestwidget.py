@@ -5,6 +5,7 @@ from requests import request
 from responsewidget import ResponseWidget
 from innerwidgets.keyvaluewidget import KeyValueWidget
 from datawidgets.jsonwidget import JSONWidget
+from datawidgets.urlenviromentvariableswidget import URLEnviromentVariablesWidget
 from utils.helper import valid_json_to_py_object
 
 class GeneralRequestWidget(QWidget):
@@ -53,13 +54,14 @@ class GeneralRequestWidget(QWidget):
         self.method = method
         self.recent_valid_request_data = None
         self.saved_request_data = {}
+        self.url_var_env_widget = URLEnviromentVariablesWidget(self, self.main_widget)
         self.json_data_widget = JSONWidget(self.main_widget)
 
         # URL Section
         label_url = QLabel("URL:")
         self.le_url = QLineEdit(self)
         self.le_url.setPlaceholderText("URL here")
-        self.le_url.setFixedWidth(350)
+        self.le_url.setFixedWidth(400)
         v_url_layout = QVBoxLayout()
         v_url_layout.addWidget(label_url)
         v_url_layout.addWidget(self.le_url)
@@ -87,11 +89,14 @@ class GeneralRequestWidget(QWidget):
         # Main Action Buttons
         b_send_request = QPushButton("Send Request")
         b_send_request.clicked.connect(self.send_request)
+        b_url_var_env = QPushButton("Var Enviroment")
+        b_url_var_env.clicked.connect(self.show_url_enviroment)
         b_clear_data = QPushButton("Clear Data")
         b_clear_data.clicked.connect(self.clear_data)
         h_main_buttons_layout = QHBoxLayout()
-        h_main_buttons_layout.addWidget(b_send_request)
-        h_main_buttons_layout.addWidget(b_clear_data)
+        h_main_buttons_layout.addWidget(b_send_request, 1)
+        h_main_buttons_layout.addWidget(b_url_var_env, 1)
+        h_main_buttons_layout.addWidget(b_clear_data, 1)
 
         # JSON Data Section
         label_data = QLabel("Data:")
@@ -206,6 +211,7 @@ class GeneralRequestWidget(QWidget):
             "headers_state": self.kv_headers.get_complete_widget_state(),
         }
 
+
     def clear_data(self):
         """
         Reset all input fields and configurations to their default empty state.
@@ -310,6 +316,9 @@ class GeneralRequestWidget(QWidget):
 
         del self.saved_request_data[selected_item.text()]
         self.lw_saved_requests.takeItem(self.lw_saved_requests.row(selected_item))
+
+    def show_url_enviroment(self):
+        self.url_var_env_widget.show()
 
     def edit_json_data(self):
         """

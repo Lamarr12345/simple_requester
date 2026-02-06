@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QDialog, QTextEdit, QVBoxLayout
+from PySide6.QtWidgets import QDialog, QTextEdit, QVBoxLayout
 from PySide6.QtCore import Qt
 
 class JSONWidget(QDialog):
