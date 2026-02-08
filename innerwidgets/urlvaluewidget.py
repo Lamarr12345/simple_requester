@@ -101,7 +101,6 @@ class URLValueWidget(QScrollArea):
 
             self.v_list_layout.addLayout(h_layout)
 
-
     def _remove_env_variable_at_index(self, index):
 
         self.env_key_list[index].deleteLater()

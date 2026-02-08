@@ -22,6 +22,7 @@ class URLEnviromentVariablesWidget(QDialog):
         self.stack_url_env.addWidget(self.url_value_widget)
 
         self.button_help = QPushButton("Help")
+        self.button_help.clicked.connect(self.show_help)
 
         v_main_layout = QVBoxLayout()
         v_main_layout.addWidget(self.stack_url_env)
@@ -46,7 +47,6 @@ class URLEnviromentVariablesWidget(QDialog):
         var_list = list(dict.fromkeys(var_list))
 
         if var_list == self.url_value_widget.get_env_variable_key_list():
-            self.parent_widget.le_url.setModified(False)
             return
 
         self.url_value_widget.set_env_variables_list(var_list)
@@ -56,11 +56,13 @@ class URLEnviromentVariablesWidget(QDialog):
         else:
             self.stack_url_env.setCurrentIndex(0)
 
-        url_widget.setModified(False)
 
+    def clear_env_vars(self):
+        self.url_value_widget.delete_all_env_variables()
+        self.stack_url_env.setCurrentIndex(0)
 
     def is_var_env_valid(self, url_widget: QTextEdit):
-        url = self.parent_widget.le_url.text()
+        url = url_widget.text()
 
         pattern = r"(?<=(?![^\{])\{\{)[ ]*[^ \{\}]+?[ ]*(?=\}\})"
         var_list = re.findall(pattern, url)
@@ -73,9 +75,6 @@ class URLEnviromentVariablesWidget(QDialog):
         env_state = self.url_value_widget.get_env_variables_state()
 
         url:str = url_widget.text()
-
-        pattern = r"(?![^\{])\{\{[ ]*[^ \{\}]+?[ ]*\}\}"
-        replacement_list = re.findall(pattern, url)
         
         error_list = []
         for key, value in env_state:
@@ -83,15 +82,37 @@ class URLEnviromentVariablesWidget(QDialog):
                 error_list.append(f"Value for the variable '{key}' is empty.")
             if " " in value:
                 error_list.append(f"Value for the variable '{key}' contains empty space.")
-
-            for replacement in replacement_list:
-                print(replacement, key, value)
-                if key in replacement:
-                    url.replace(replacement, value)
-
         if error_list:
             raise ValueError("\n".join(error_list))
         
-        return url
+        pattern = r"(?![^\{])\{\{[ ]*[^ \{\}]+?[ ]*\}\}"
+        replacement_sections = re.findall(pattern, url)
 
+        for section in replacement_sections:
+            cleaned_section = section.replace(" ","")
+            url = url.replace(section, cleaned_section)
+
+        for key, value in env_state:
+            url = url.replace(r"{{"+key+r"}}", value)
+        
+        return url
+    
+    def get_env_state(self):
+        env_state = self.url_value_widget.get_env_variables_state()
+        if env_state:
+            self.stack_url_env.setCurrentIndex(1)
+        else:
+            self.stack_url_env.setCurrentIndex(0)
+        return env_state
+    
+    def set_env_state(self, env_state):
+        if env_state:
+            self.stack_url_env.setCurrentIndex(1)
+        else:
+            self.stack_url_env.setCurrentIndex(0)
+        self.url_value_widget.set_env_variables_state(env_state)
+
+    def show_help(self):
+        help_text = """Some Helpfull text about how it works."""
+        QMessageBox.about(self, "Help", help_text)
 

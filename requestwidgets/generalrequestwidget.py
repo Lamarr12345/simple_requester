@@ -9,45 +9,9 @@ from datawidgets.urlenviromentvariableswidget import URLEnviromentVariablesWidge
 from utils.helper import valid_json_to_py_object
 
 class GeneralRequestWidget(QWidget):
-    """
-    A comprehensive HTTP request configuration widget for sending various types of HTTP requests.
     
-    This widget provides a user interface to configure and send HTTP requests with support for
-    parameters, headers, JSON data and request persistence. It serves as a general-purpose
-    request builder that can be used for different HTTP methods (GET, POST, PUT, DELETE, etc.).
-    
-    Features:
-    - URL input with validation
-    - Key-value parameter management
-    - Custom header configuration
-    - JSON data editor
-    - Request history and persistence
-    - Response display integration
-    
-    Attributes:
-        main_widget (QWidget): Parent widget that contains this component.
-        method (str): HTTP method to use for requests (e.g., 'GET', 'POST', 'PUT', 'DELETE').
-        recent_valid_request_data (dict or None): Cached data from the most recent successful request.
-        saved_request_data (dict): Dictionary storing saved request configurations keyed by name.
-        json_data_widget (JSONWidget): Widget for editing JSON request body data.
-        le_url (QLineEdit): Input field for the target URL.
-        kv_params (KeyValueWidget): Widget for managing query parameters.
-        kv_headers (KeyValueWidget): Widget for managing HTTP headers.
-        le_savename (QLineEdit): Input field for naming saved requests.
-        lw_saved_requests (QListWidget): List displaying saved request names.
-    
-    Args:
-        parent (QWidget): The parent widget that contains this request widget.
-        method (str): The HTTP method this widget will use for requests.
-    """
     def __init__(self, parent, method):
-        """
-        Initialize the GeneralRequestWidget with the specified HTTP method.
-        
-        Args:
-            parent (QWidget): The parent widget that contains this request widget.
-            method (str): The HTTP method this widget will use for requests.
-        """
+       
         super().__init__()
 
         self.main_widget = parent
@@ -152,23 +116,7 @@ class GeneralRequestWidget(QWidget):
        
 
     def send_request(self):
-        """
-        Execute an HTTP request with the configured parameters.
-        
-        This method:
-        1. Validates and trims the URL input
-        2. Parses and validates JSON data from the JSON widget
-        3. Sends the HTTP request with configured parameters, headers, and JSON data
-        4. Displays any validation or network errors in message boxes
-        5. Creates a ResponseWidget to display the response
-        6. Caches the successful request configuration for potential saving
-        
-        Raises:
-            Shows QMessageBox for:
-                - JSON validation errors
-                - Network request errors (timeout, connection issues, etc.)
-                - Invalid URLs or malformed request configurations
-        """
+       
         self.le_url.setText(self.le_url.text().strip())
         url = self.le_url.text()
 
@@ -178,6 +126,17 @@ class GeneralRequestWidget(QWidget):
             QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         
+        if not self.url_var_env_widget.is_var_env_valid(self.le_url):
+            QMessageBox.critical(self, "Var Env Error","The current variable enviroment is not matching the URL anymore.", QMessageBox.Ok)
+            return
+        
+        if self.url_var_env_widget.url_value_widget.get_env_variable_key_list():
+            try:
+                url = self.url_var_env_widget.get_modified_url(self.le_url)
+            except Exception as e:
+                QMessageBox.critical(self,type(e).__name__, str(e), QMessageBox.Ok)
+                return
+
         try:
             response = request(method=self.method,
                                url=url,
@@ -193,19 +152,10 @@ class GeneralRequestWidget(QWidget):
         self._cache_recent_valid_request_data()
 
     def _cache_recent_valid_request_data(self):
-        """
-        Cache the current request configuration after a successful request.
-        
-        Stores the complete state of the request widget including:
-            - URL
-            - JSON data
-            - Parameters widget state
-            - Headers widget state
-        
-        This cached data can be later saved using the save_request() method.
-        """
+      
         self.recent_valid_request_data = {
             "url": self.le_url.text(),
+            "url_env_state": self.url_var_env_widget.get_env_state(),
             "json": self.json_data_widget.get_json_data(),
             "params_state": self.kv_params.get_complete_widget_state(),
             "headers_state": self.kv_headers.get_complete_widget_state(),
@@ -213,39 +163,15 @@ class GeneralRequestWidget(QWidget):
 
 
     def clear_data(self):
-        """
-        Reset all input fields and configurations to their default empty state.
-        
-        Clears:
-            - URL input field
-            - JSON data widget content
-            - All parameter key-value pairs
-            - All header key-value pairs
-        """
+    
         self.le_url.clear()
         self.json_data_widget.delete_json_data()
         self.kv_params.delete_all_kv_pair()
         self.kv_headers.delete_all_kv_pair()
+        self.url_var_env_widget.clear_env_vars()
 
     def save_request(self):
-        """
-        Save the most recent successful request configuration.
-        
-        This method:
-        1. Validates that there is recent valid request data to save
-        2. Validates and trims the save name input
-        3. Ensures the save name is not empty
-        4. Checks for duplicate save names
-        5. Stores the request configuration in saved_request_data dictionary
-        6. Adds the save name to the saved requests list widget
-        7. Clears the recent valid request data cache and save name input
-        
-        Raises:
-            Shows QMessageBox for:
-                - No recent valid request data
-                - Empty save name
-                - Duplicate save name
-        """
+       
         if not self.recent_valid_request_data:
             QMessageBox.warning(self,"No recent data", "No recent valid unsaved data.", QMessageBox.Ok)
             return
@@ -269,17 +195,7 @@ class GeneralRequestWidget(QWidget):
 
 
     def load_request(self):
-        """
-        Load a previously saved request configuration.
-        
-        This method:
-        1. Checks if a saved request is selected in the list widget
-        2. Retrieves the saved configuration from saved_request_data
-        3. Populates all input fields with the saved configuration
-        4. Restores the url, JSON data, parameters, and headers to their saved state
-        
-        If no request is selected, the method returns without making any changes.
-        """
+    
         selected_items = self.lw_saved_requests.selectedItems()
         
         if not selected_items:
@@ -290,23 +206,13 @@ class GeneralRequestWidget(QWidget):
         saved_entry =  self.saved_request_data.get(selected_item_text)
 
         self.le_url.setText(saved_entry.get("url"))
+        self.url_var_env_widget.set_env_state(saved_entry.get("url_env_state"))
         self.json_data_widget.set_json_data(saved_entry.get("json"))
         self.kv_params.set_complete_widget_state(saved_entry.get("params_state"))
         self.kv_headers.set_complete_widget_state(saved_entry.get("headers_state"))
 
     def delete_request(self):
-        """
-        Delete a saved request configuration.
-        
-        This method:
-        1. Checks if a saved request is selected in the list widget
-        2. Removes the configuration from the saved_request_data dictionary
-        3. Removes the item from the saved requests list widget
-        
-        If no request is selected, the method returns without making any changes.
-        
-        Note: This action cannot be undone.
-        """
+       
         selected_items = self.lw_saved_requests.selectedItems()
         
         if not selected_items:
@@ -319,11 +225,8 @@ class GeneralRequestWidget(QWidget):
 
 
     def edit_json_data(self):
-        """
-        Open the JSON data editor widget.
-        """
-        print(self.url_var_env_widget.get_modified_url(self.le_url))
-        #self.json_data_widget.show()
+     
+        self.json_data_widget.show()
 
     def set_env_vars_and_show_widget(self):
         if not self.le_url.isModified():

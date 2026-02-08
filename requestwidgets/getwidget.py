@@ -4,6 +4,7 @@ import requests
 
 from responsewidget import ResponseWidget
 from innerwidgets.keyvaluewidget import KeyValueWidget
+from datawidgets.urlenviromentvariableswidget import URLEnviromentVariablesWidget
 
 class GetWidget(QWidget):
     """
@@ -46,6 +47,7 @@ class GetWidget(QWidget):
         self.main_widget = parent
         self.recent_valid_request_data = None
         self.saved_request_data = {}
+        self.url_var_env_widget = URLEnviromentVariablesWidget(self, self.main_widget)
 
         # URL Section
         label_url = QLabel("URL:")
@@ -79,11 +81,14 @@ class GetWidget(QWidget):
         # Main Action Buttons
         b_send_request = QPushButton("Send Request")
         b_send_request.clicked.connect(self.send_request)
+        b_url_var_env = QPushButton("Var Enviroment")
+        b_url_var_env.clicked.connect(self.set_env_vars_and_show_widget)
         b_clear_data = QPushButton("Clear Data")
         b_clear_data.clicked.connect(self.clear_data)
         h_main_buttons_layout = QHBoxLayout()
-        h_main_buttons_layout.addWidget(b_send_request)
-        h_main_buttons_layout.addWidget(b_clear_data)
+        h_main_buttons_layout.addWidget(b_send_request, 1)
+        h_main_buttons_layout.addWidget(b_url_var_env, 1)
+        h_main_buttons_layout.addWidget(b_clear_data, 1)
 
         # Saved Requests Section
         label_saved_requests = QLabel("Saved Requests:")
@@ -147,6 +152,18 @@ class GetWidget(QWidget):
         """
         self.le_url.setText(self.le_url.text().strip())
         url = self.le_url.text()
+
+        if not self.url_var_env_widget.is_var_env_valid(self.le_url):
+            QMessageBox.critical(self, "Var Env Error","The current variable enviroment is not matching the URL anymore.", QMessageBox.Ok)
+            return
+        
+        if self.url_var_env_widget.url_value_widget.get_env_variable_key_list():
+            try:
+                url = self.url_var_env_widget.get_modified_url(self.le_url)
+            except Exception as e:
+                QMessageBox.critical(self, type(e).__name__, str(e), QMessageBox.Ok)
+                return
+
         
         try:
             response = requests.get(url=url,
@@ -158,9 +175,9 @@ class GetWidget(QWidget):
             return
 
         self.main_widget.response_widget = ResponseWidget(response)
-        self.cache_recent_valid_request_data()
+        self._cache_recent_valid_request_data()
 
-    def cache_recent_valid_request_data(self):
+    def _cache_recent_valid_request_data(self):
         """
         Cache the current request configuration after a successful request.
         
@@ -173,6 +190,7 @@ class GetWidget(QWidget):
         """
         self.recent_valid_request_data = {
             "url": self.le_url.text(),
+            "url_env_state": self.url_var_env_widget.get_env_state(),
             "params_state": self.kv_params.get_complete_widget_state(),
             "headers_state": self.kv_headers.get_complete_widget_state(),
         }
@@ -189,6 +207,7 @@ class GetWidget(QWidget):
         self.le_url.clear()
         self.kv_params.delete_all_kv_pair()
         self.kv_headers.delete_all_kv_pair()
+        self.url_var_env_widget.clear_env_vars()
 
     def save_request(self):
         """
@@ -253,6 +272,7 @@ class GetWidget(QWidget):
         saved_entry =  self.saved_request_data.get(selected_item_text)
 
         self.le_url.setText(saved_entry.get("url"))
+        self.url_var_env_widget.set_env_state(saved_entry.get("url_env_state"))
         self.kv_params.set_complete_widget_state(saved_entry.get("params_state"))
         self.kv_headers.set_complete_widget_state(saved_entry.get("headers_state"))
 
@@ -279,4 +299,7 @@ class GetWidget(QWidget):
         del self.saved_request_data[selected_item.text()]
         self.lw_saved_requests.takeItem(self.lw_saved_requests.row(selected_item))
 
-
+    def set_env_vars_and_show_widget(self):
+        
+        self.url_var_env_widget.set_env_vars(self.le_url)
+        self.url_var_env_widget.show()
