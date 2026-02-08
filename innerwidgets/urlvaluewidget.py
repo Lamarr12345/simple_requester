@@ -45,6 +45,17 @@ class URLValueWidget(QScrollArea):
 
             self.v_list_layout.addLayout(h_layout)
 
+    def get_env_variable_key_list(self):
+        return [x.text() for x in self.env_key_list]
+    
+    def get_env_variable_value_list(self):
+        output = [x.text().strip() for x in self.env_value_list]
+
+        for i in range(len(output)):
+            self.env_value_list[i].setText(output[i])
+        
+        return output
+
     def delete_all_env_variables(self):
         env_variables_count = self.v_list_layout.count()
 

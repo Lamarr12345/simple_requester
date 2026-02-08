@@ -90,7 +90,7 @@ class GeneralRequestWidget(QWidget):
         b_send_request = QPushButton("Send Request")
         b_send_request.clicked.connect(self.send_request)
         b_url_var_env = QPushButton("Var Enviroment")
-        b_url_var_env.clicked.connect(self.show_url_enviroment)
+        b_url_var_env.clicked.connect(self.set_env_vars_and_show_widget)
         b_clear_data = QPushButton("Clear Data")
         b_clear_data.clicked.connect(self.clear_data)
         h_main_buttons_layout = QHBoxLayout()
@@ -317,11 +317,18 @@ class GeneralRequestWidget(QWidget):
         del self.saved_request_data[selected_item.text()]
         self.lw_saved_requests.takeItem(self.lw_saved_requests.row(selected_item))
 
-    def show_url_enviroment(self):
-        self.url_var_env_widget.show()
 
     def edit_json_data(self):
         """
         Open the JSON data editor widget.
         """
-        self.json_data_widget.show()
+        print(self.url_var_env_widget.get_modified_url(self.le_url))
+        #self.json_data_widget.show()
+
+    def set_env_vars_and_show_widget(self):
+        if not self.le_url.isModified():
+            self.url_var_env_widget.show()
+            return
+        
+        self.url_var_env_widget.set_env_vars(self.le_url)
+        self.url_var_env_widget.show()
