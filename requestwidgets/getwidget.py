@@ -209,6 +209,17 @@ class GetWidget(QWidget):
         self.kv_headers.delete_all_kv_pair()
         self.url_var_env_widget.clear_env_vars()
 
+    def clear_save_data(self):
+        save_count = self.lw_saved_requests.count()
+
+        for i in range(save_count-1, -1, -1):
+            entry_name = self.lw_saved_requests.item(i).text()
+            del self.saved_request_data[entry_name]
+            self.lw_saved_requests.takeItem(i)
+
+        self.le_savename.clear()
+            
+
     def save_request(self):
         """
         Save the most recent successful request configuration.
@@ -307,3 +318,19 @@ class GetWidget(QWidget):
             return
         
         self.url_var_env_widget.show()
+
+        #self.set_widget_state(self.get_widget_state())
+
+    def get_widget_state(self):
+
+        return self.saved_request_data
+    
+    def set_widget_state(self, widget_state: dict):
+        self.clear_data()
+        self.clear_save_data()
+
+        self.saved_request_data = widget_state
+
+        for key in widget_state.keys():
+            self.lw_saved_requests.addItem(key)
+

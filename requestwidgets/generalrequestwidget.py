@@ -161,7 +161,6 @@ class GeneralRequestWidget(QWidget):
             "headers_state": self.kv_headers.get_complete_widget_state(),
         }
 
-
     def clear_data(self):
     
         self.le_url.clear()
@@ -169,6 +168,16 @@ class GeneralRequestWidget(QWidget):
         self.kv_params.delete_all_kv_pair()
         self.kv_headers.delete_all_kv_pair()
         self.url_var_env_widget.clear_env_vars()
+
+    def clear_save_data(self):
+        save_count = self.lw_saved_requests.count()
+
+        for i in range(save_count-1, -1, -1):
+            entry_name = self.lw_saved_requests.item(i).text()
+            del self.saved_request_data[entry_name]
+            self.lw_saved_requests.takeItem(i)
+
+        self.le_savename.clear()
 
     def save_request(self):
        
