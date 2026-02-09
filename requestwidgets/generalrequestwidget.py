@@ -229,9 +229,10 @@ class GeneralRequestWidget(QWidget):
         self.json_data_widget.show()
 
     def set_env_vars_and_show_widget(self):
-        if not self.le_url.isModified():
-            self.url_var_env_widget.show()
+        try:
+            self.url_var_env_widget.set_env_vars(self.le_url)
+        except Exception as e:
+            QMessageBox.warning(self,type(e).__name__, str(e), QMessageBox.Ok)
             return
         
-        self.url_var_env_widget.set_env_vars(self.le_url)
         self.url_var_env_widget.show()

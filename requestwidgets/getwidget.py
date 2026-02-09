@@ -157,7 +157,7 @@ class GetWidget(QWidget):
             QMessageBox.critical(self, "Var Env Error","The current variable enviroment is not matching the URL anymore.", QMessageBox.Ok)
             return
         
-        if self.url_var_env_widget.url_value_widget.get_env_variable_key_list():
+        if self.url_var_env_widget.is_env_set():
             try:
                 url = self.url_var_env_widget.get_modified_url(self.le_url)
             except Exception as e:
@@ -300,6 +300,10 @@ class GetWidget(QWidget):
         self.lw_saved_requests.takeItem(self.lw_saved_requests.row(selected_item))
 
     def set_env_vars_and_show_widget(self):
+        try:
+            self.url_var_env_widget.set_env_vars(self.le_url)
+        except Exception as e:
+            QMessageBox.warning(self,type(e).__name__, str(e), QMessageBox.Ok)
+            return
         
-        self.url_var_env_widget.set_env_vars(self.le_url)
         self.url_var_env_widget.show()

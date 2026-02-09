@@ -48,13 +48,13 @@ class URLValueWidget(QScrollArea):
     def get_env_variable_key_list(self):
         return [x.text() for x in self.env_key_list]
     
-    def get_env_variable_value_list(self):
-        output = [x.text().strip() for x in self.env_value_list]
+    # def get_env_variable_value_list(self):
+    #     output = [x.text().strip() for x in self.env_value_list]
 
-        for i in range(len(output)):
-            self.env_value_list[i].setText(output[i])
+    #     for i in range(len(output)):
+    #         self.env_value_list[i].setText(output[i])
         
-        return output
+    #     return output
 
     def delete_all_env_variables(self):
         env_variables_count = self.v_list_layout.count()
@@ -110,18 +110,3 @@ class URLValueWidget(QScrollArea):
         del self.env_value_list[index]
 
         self.v_list_layout.takeAt(index)
-
-def main():
-    app = QApplication()
-    main = URLValueWidget()
-
-    #main.set_env_variables_list(["user_id", "blog_id", "comment_id"])
-    main.set_env_variables_state([("user_id", "12"), ("blog_id", "13"), ("comment_id", "salat")])
-    main.set_env_variables_list(["jim", "john", "dieter"])
-
-    main.show()
-    print(main.get_env_variables_state())
-
-    app.exec()
-if __name__ == '__main__':
-    main()

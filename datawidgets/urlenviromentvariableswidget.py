@@ -41,13 +41,17 @@ class URLEnviromentVariablesWidget(QDialog):
 
         # #(?![^\{])\{\{[ ]*[^ \{\}]+?[ ]*\}\} that is one word
         # #(?<=(?![^\{])\{\{)[ ]*[^ \{\}]+?[ ]*(?=\}\}) content of brackeds (including empty spaces)
-        pattern = r"(?<=(?![^\{])\{\{)[ ]*[^ \{\}]+?[ ]*(?=\}\})"
+        pattern = r"(?<=(?![^\{])\{\{)[ ]*[^\{\}]+?[ ]*(?=\}\})"
         var_list = re.findall(pattern, url)
         var_list = [var.strip() for var in var_list]
         var_list = list(dict.fromkeys(var_list))
 
         if var_list == self.url_value_widget.get_env_variable_key_list():
             return
+        
+        vars_with_empty_space = [var for var in var_list if " " in var]
+        if vars_with_empty_space:
+            raise ValueError("Enviroment variable(s) include empty space.")
 
         self.url_value_widget.set_env_variables_list(var_list)
 
@@ -115,4 +119,7 @@ class URLEnviromentVariablesWidget(QDialog):
     def show_help(self):
         help_text = """Some Helpfull text about how it works."""
         QMessageBox.about(self, "Help", help_text)
+
+    def is_env_set(self):
+        return len(self.url_value_widget.get_env_variable_key_list()) != 0
 
