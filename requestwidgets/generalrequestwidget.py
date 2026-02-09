@@ -245,3 +245,16 @@ class GeneralRequestWidget(QWidget):
             return
         
         self.url_var_env_widget.show()
+
+    def get_widget_state(self):
+
+        return self.saved_request_data
+    
+    def set_widget_state(self, widget_state: dict):
+        self.clear_data()
+        self.clear_save_data()
+
+        self.saved_request_data = widget_state
+
+        for key in widget_state.keys():
+            self.lw_saved_requests.addItem(key)

@@ -319,8 +319,6 @@ class GetWidget(QWidget):
         
         self.url_var_env_widget.show()
 
-        #self.set_widget_state(self.get_widget_state())
-
     def get_widget_state(self):
 
         return self.saved_request_data
