@@ -6,6 +6,8 @@ import json
 from requestwidgets.generalrequestwidget import GeneralRequestWidget
 from requestwidgets.getwidget import GetWidget
 
+SAVE_FILE_EXTENSION = ".srsf"
+
 class SaveLoadWidget(QWidget):
     def __init__(self,
                  parent,
@@ -43,7 +45,7 @@ class SaveLoadWidget(QWidget):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Save File")
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
-        file_dialog.setNameFilter("Save Files (*.srsf)")
+        file_dialog.setNameFilter(f"Save Files (*{SAVE_FILE_EXTENSION})")
         file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
 
         selected_files = None
@@ -63,6 +65,9 @@ class SaveLoadWidget(QWidget):
         
         selected_file = selected_files[0]
 
+        if not selected_file.endswith(f"Save Files (*{SAVE_FILE_EXTENSION})"):
+            selected_file = selected_file + SAVE_FILE_EXTENSION
+
         save_data = {}
         save_data["getrequests"] = self.getwidget.get_widget_state()
         save_data["postrequests"] = self.postwidget.get_widget_state()
@@ -78,7 +83,7 @@ class SaveLoadWidget(QWidget):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Load File")
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-        file_dialog.setNameFilter("Save Files (*.srsf)")
+        file_dialog.setNameFilter(f"Save Files (*{SAVE_FILE_EXTENSION})")
         file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
 
         selected_files = None
