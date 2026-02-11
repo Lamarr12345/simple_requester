@@ -43,6 +43,7 @@ class SaveLoadWidget(QWidget):
 
     def save_requests(self):
         file_dialog = QFileDialog(self)
+        file_dialog.setDefaultSuffix(SAVE_FILE_EXTENSION)
         file_dialog.setWindowTitle("Save File")
         file_dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
         file_dialog.setNameFilter(f"Save Files (*{SAVE_FILE_EXTENSION})")
