@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QLineEdit, QListWidget, QPushButt
 from PySide6.QtCore import Qt
 from requests import request
 
-from responsewidget import ResponseWidget
+from mainwidgets.responsewidget import ResponseWidget
 from innerwidgets.keyvaluewidget import KeyValueWidget
 from datawidgets.jsonwidget import JSONWidget
 from datawidgets.urlenviromentvariableswidget import URLEnviromentVariablesWidget

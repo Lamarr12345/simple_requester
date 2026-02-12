@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QApplication
 import sys 
-from mainwidget import MainWidget
-from responsewidget import ResponseWidget
+from mainwidgets.mainwidget import MainWidget
+from mainwidgets.responsewidget import ResponseWidget
 
 def main():
     app = QApplication(sys.argv)

@@ -66,8 +66,8 @@ class SaveLoadWidget(QWidget):
         
         selected_file = selected_files[0]
 
-        if not selected_file.endswith(SAVE_FILE_EXTENSION):
-            selected_file = selected_file + SAVE_FILE_EXTENSION
+        # if not selected_file.endswith(SAVE_FILE_EXTENSION):
+        #     selected_file = selected_file + SAVE_FILE_EXTENSION
 
         save_data = {}
         save_data["getrequests"] = self.getwidget.get_widget_state()
