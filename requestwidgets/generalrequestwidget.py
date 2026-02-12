@@ -1,11 +1,13 @@
 from PySide6.QtWidgets import QWidget, QLabel, QLineEdit, QListWidget, QPushButton, QHBoxLayout, QVBoxLayout,QMessageBox
 from PySide6.QtCore import Qt
 from requests import request
+import re
 
 from mainwidgets.responsewidget import ResponseWidget
 from innerwidgets.keyvaluewidget import KeyValueWidget
 from datawidgets.jsonwidget import JSONWidget
 from datawidgets.urlenviromentvariableswidget import URLEnviromentVariablesWidget
+from innerwidgets.lineeditwithsyntaxhighlight import LineEditWithSyntaxHighlight
 from utils.helper import valid_json_to_py_object
 
 class GeneralRequestWidget(QWidget):
@@ -23,7 +25,8 @@ class GeneralRequestWidget(QWidget):
 
         # URL Section
         label_url = QLabel("URL:")
-        self.le_url = QLineEdit(self)
+        self.le_url = LineEditWithSyntaxHighlight(self)
+        self.le_url.textEdited.connect(self.highlight_env_vars)
         self.le_url.setPlaceholderText("URL here")
         self.le_url.setFixedWidth(400)
         v_url_layout = QVBoxLayout()
@@ -258,3 +261,13 @@ class GeneralRequestWidget(QWidget):
 
         for key in widget_state.keys():
             self.lw_saved_requests.addItem(key)
+
+    def highlight_env_vars(self):
+        url = self.le_url.text()
+
+        pattern = r"(?![^\{])\{\{[ ]*[^ \{\}]+?[ ]*\}\}"
+        env_vars = re.finditer(pattern, url)
+
+        if env_vars:
+            env_var_indices = [(env_var.start(), env_var.end()) for env_var in env_vars]
+            self.le_url.highlight_text_by_index_span(env_var_indices)
