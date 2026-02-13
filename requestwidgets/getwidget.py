@@ -341,8 +341,7 @@ class GetWidget(QWidget):
         pattern = r"(?![^\{])\{\{[ ]*[^ \{\}]+?[ ]*\}\}"
         env_vars = re.finditer(pattern, url)
         env_var_indices = [(env_var.start(), env_var.end()) for env_var in env_vars]
-        if env_var_indices:
-            self.le_url.highlight_text_by_index_span(env_var_indices)
+        self.le_url.highlight_text_by_index_span(env_var_indices)
 
         
 
