@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtGui import QTextLayout, QInputMethodEvent,QTextCharFormat, QColor
 from PySide6.QtCore import QCoreApplication
+import re
 
 class LineEditWithSyntaxHighlight(QLineEdit):
     def __init__(self, parent):
@@ -10,16 +11,29 @@ class LineEditWithSyntaxHighlight(QLineEdit):
         self.syntax_highlight_format = QTextCharFormat()
         self.syntax_highlight_format.setBackground(highlight_color)
 
-    def highlight_text_by_index_span(self, index_spans: list[tuple[int, int]]):
-        attributes = []
+        self.is_env_var_set = False
+        self.env_var_pattern = r"\{\{[ ]*[^ \{\}]+?[ ]*\}\}"
 
-        # s = start of hightlight section, e = end of highlight section
-        for s, e in index_spans:
-            type = QInputMethodEvent.AttributeType.TextFormat
-            start = s - self.cursorPosition()
-            length = e - s
-            value = self.syntax_highlight_format
-            attributes.append(QInputMethodEvent.Attribute(type, start, length, value))
+    def highlight_env_vars(self):
+        url = self.text()
+        if not self.is_env_var_set and re.search(self.env_var_pattern, url):
+            self.is_env_var_set = True
 
-        event = QInputMethodEvent("", attributes)
-        QCoreApplication.sendEvent(self, event)
+        if self.is_env_var_set:
+            attributes = []
+            env_vars = re.finditer(self.env_var_pattern, url)
+            env_var_indices = [(env_var.start(), env_var.end()) for env_var in env_vars]
+
+            if not env_var_indices:
+                self.is_env_var_set = False
+
+            # s = start of hightlight section, e = end of highlight section
+            for s, e in env_var_indices:
+                type = QInputMethodEvent.AttributeType.TextFormat
+                start = s - self.cursorPosition()
+                length = e - s
+                value = self.syntax_highlight_format
+                attributes.append(QInputMethodEvent.Attribute(type, start, length, value))
+
+            event = QInputMethodEvent("", attributes)
+            QCoreApplication.sendEvent(self, event)
