@@ -1,6 +1,6 @@
 # Simple Requester
 
-A lightweight API testing tool built with Python, PySide6, and the `requests` library. It provides a graphical interface for composing and sending HTTP requests, viewing responses, and saving/loading request configurations.
+A lightweight API testing tool built with Python, PySide6, and the requests library. It provides a graphical interface for composing and sending HTTP requests, viewing responses, and saving/loading request configurations.
 
 ![Request Interface](__screenshots/update_object.png)
 ![Response Example](__screenshots/response_to_update.png)
