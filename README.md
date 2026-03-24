@@ -46,10 +46,6 @@ A lightweight API testing tool built with Python, PySide6, and the requests libr
    ```bash
    pip install -r requirements.txt
    ```
-   If no `requirements.txt` exists, install manually:
-   ```bash
-   pip install PySide6 requests beautifulsoup4
-   ```
 
 ## Usage
 
