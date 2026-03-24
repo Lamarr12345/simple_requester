@@ -32,7 +32,7 @@ A lightweight API testing tool built with Python, PySide6, and the requests libr
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/simple-requester.git
+   git clone https://github.com/Lamarr12345/simple_requester.git
    cd simple-requester
    ```
 
