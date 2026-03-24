@@ -93,7 +93,7 @@ simple-requester/
 ## Known Limitations
 
 - There no way to format responses like JSON for readability.
-- Placeholder text in some places (e.g. help text for enirement variables)
+- Placeholder text in some places (e.g. help text for enviroment variables)
 
 ## License
 
